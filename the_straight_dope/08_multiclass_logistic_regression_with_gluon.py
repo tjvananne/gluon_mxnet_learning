@@ -73,12 +73,17 @@ trainer = gluon.Trainer(
 
 # this is a quick snippet to understand the reshape operator here...
 for i, (data, label) in enumerate(train_data):
+    # data2 and data3 are the exact same dimension
     data2 = data.as_in_context(model_ctx).reshape((-1, 784))
+    data3 = data.as_in_context(model_ctx).reshape((64, 784))
     break
 
 
 # (64, 28, 28, 1)  to  (64, 784)
-print(data.shape, data2.shape)
+print(data.shape, data2.shape, data3.shape)
+print(nd.sum(data2 == data3) / 64)  # they are identical
+data2
+
 
 
 

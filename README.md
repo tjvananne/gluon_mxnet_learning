@@ -11,9 +11,9 @@ Exploring and learning the mxnet deep learning framework - specifically using th
 3. conda install spyder
 4. conda install jupyter
 5. conda install mxnet
-6. conda install cython
-7. conda install gluon  (might need to pip this one...)
-8. conda install numpy
+~~6. conda install cython~~
+~~7. conda install gluon  (might need to pip this one...)~~
+~~8. conda install numpy~~ (let mxnet pick the numpy version based on dependency)
 9. conda install pandas
 10. conda install matplotlib
 11. conda install seaborn
