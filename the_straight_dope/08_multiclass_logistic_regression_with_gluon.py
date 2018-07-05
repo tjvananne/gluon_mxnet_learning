@@ -86,21 +86,47 @@ data2
 
 
 
-
 # set up evaluation metric - because logloss
 # isn't as meaningful as accuracy for humans to read
 def evaluate_accuracy(data_iterator, net):
     acc = mx.metric.Accuracy()
     for i, (data, label) in enumerate(data_iterator):
-        data2 = data.as_in_context(model_ctx).reshape((-1, 784))
-        break
-    break
+        data = data.as_in_context(model_ctx).reshape((-1, 784))
+        label = label.as_in_context(model_ctx)
+        output = net(data)
+        # for each row, give index of the highest number
+        predictions = nd.argmax(output, axis=1)
+        # accuracy has an update method..
+        acc.update(preds=predictions, labels=label)
+    # output is ("accuracy", numeric_value)
+    # that is why we subset to the second item
+    return acc.get()[1]
 
 
 
+evaluate_accuracy(test_data, net)
 
 
+# Execute the training loop
+epochs = 10
+moving_loss = 0.
 
+for e in range(epochs):
+    cumulative_loss = 0
+    for i, (data, label) in enumerate(train_data):
+        data = data.as_in_context(model_ctx).reshape((-1, 784))
+        label = label.as_in_context(model_ctx)
+        with autograd.record():
+            output = net(data)
+            loss = softmax_cross_entropy(output, label)
+        loss.backward()
+        trainer.step(batch_size)
+        cumulative_loss += nd.sum(loss).asscalar()
+        
+    test_accuracy = evaluate_accuracy(test_data, net)
+    train_accuracy = evaluate_accuracy(train_data, net)
+    print("Epoch %s. Loss: %s, Train_Acc %s, Test_Acc %s" %
+          (e, cumulative_loss/num_examples, train_accuracy, test_accuracy))
 
 
 
